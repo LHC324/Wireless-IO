@@ -165,7 +165,7 @@ void MX_FREERTOS_Init(void) {
 
   /* Create the thread(s) */
   /* definition and creation of shell */
-  osThreadDef(shell, Shell_Task, osPriorityBelowNormal, 0, 128);
+  osThreadDef(shell, Shell_Task, osPriorityBelowNormal, 0, 256);
   shellHandle = osThreadCreate(osThread(shell), (void*) &shell);
 
   /* definition and creation of at */

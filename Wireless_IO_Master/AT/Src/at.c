@@ -640,8 +640,15 @@ At_InfoList Wait_Recv(Shell *const shell, const ReceiveBufferHandle pB, const ch
 #if defined(USING_DEBUG)
     // shellPrint(shell, ">wait:%s\r\n", resp);
 #endif
-    while (HAL_GetTick() - timer < timeout)
-        ;
+    // while (HAL_GetTick() - timer < timeout)
+    // {
+    //     osDelay(1);
+    // };
+
+    while (!pB->count)
+    {
+        osDelay(1);
+    };
 #if defined(USING_DEBUG)
         // shellPrint(shell, "pB->count:%d\r\n", pB->count);
         // shellPrint(shell, "pB:%p\r\n", pB);
@@ -738,7 +745,8 @@ void Free_Mode(Shell *shell, char *pData)
                     at_cmd = (at_cmd == POWER_MODE - 1U) ? RESTART : at_cmd;
                     pS = Get_AtCmd(pAt, at_cmd, AT_TABLE_SIZE);
                     // pRe = ((at_cmd == CMD_MODE) || (at_cmd == RESTART) || (at_cmd == SET_ECHO)) ? pS->pRecv : AT_CMD_OK;
-                    pRe = ((at_cmd == CMD_MODE) || (at_cmd == RESTART)) ? pS->pRecv : AT_CMD_OK;
+                    // pRe = ((at_cmd == CMD_MODE) || (at_cmd == RESTART)) ? pS->pRecv : AT_CMD_OK;
+                    pRe = ((at_cmd == CMD_MODE) || (at_cmd == SET_ECHO)) ? pS->pRecv : AT_CMD_OK;
                     if (pS)
                     {
 #if defined(USING_FREERTOS)
@@ -872,7 +880,9 @@ static void Config_Mode(Shell *shell, char *pData)
                     shellWriteString(shell, atText[NO_CMD]);
                     break;
                 }
-                pRe = ((at_cmd == CMD_MODE) || (at_cmd == RESTART)) ? pS->pRecv : AT_CMD_OK;
+                // pRe = ((at_cmd == CMD_MODE) || (at_cmd == RESTART) || (at_cmd == SET_ECHO)) ? pS->pRecv : AT_CMD_OK;
+                // pRe = ((at_cmd == CMD_MODE) || (at_cmd == RESTART)) ? pS->pRecv : AT_CMD_OK;
+                pRe = ((at_cmd == CMD_MODE) || (at_cmd == SET_ECHO)) ? pS->pRecv : AT_CMD_OK;
                 result = Wait_Recv(shell, pH->receiveBuffer, pRe, MAX_URC_RECV_TIMEOUT);
                 // result = Wait_Recv(shell, pH->receiveBuffer, pS->pRecv, MAX_URC_RECV_TIMEOUT);
                 shellWriteString(shell, atText[result]);
@@ -902,11 +912,13 @@ void At_Handle(uint8_t cmd)
         shellWriteString(sh, atText[UNKOWN_MODE]);
         return;
     }
+    //    __set_PRIMASK(1); /* 禁止全局中断*/
     /*挂起mdbusHandle任务*/
     // osThreadSuspend(mdbusHandle);
     osThreadSuspendAll();
     /*停止发送定时器*/
     osTimerStop(Timer1Handle);
+    //    __set_PRIMASK(0); /*  使能全局中断 */
     // __HAL_UART_DISABLE_IT(&huart1, UART_IT_IDLE);
     // HAL_NVIC_DisableIRQ(USART1_IRQn);
     shellWriteString(sh, atText[cmd]);
@@ -915,9 +927,14 @@ void At_Handle(uint8_t cmd)
     osTimerStart(Timer1Handle, MDTASK_SENDTIMES);
     /*恢复mdbusHandle任务*/
     // osThreadResume(mdbusHandle);
+#if defined(USING_DEBUG)
+    // shellPrint(sh, "portNVIC_INT_CTRL_REG = 0x%x\r\n", portNVIC_INT_CTRL_REG);
+#endif
+    // __set_PRIMASK(1); /* 禁止全局中断*/
     osThreadResumeAll();
     // __HAL_UART_ENABLE_IT(&huart1, UART_IT_IDLE);
     // HAL_NVIC_EnableIRQ(USART1_IRQn);
+    // __set_PRIMASK(0); /*  使能全局中断 */
 }
 #if defined(USING_DEBUG)
 SHELL_EXPORT_CMD(SHELL_CMD_PERMISSION(0) | SHELL_CMD_TYPE(SHELL_TYPE_CMD_FUNC), at, At_Handle, config);

@@ -135,7 +135,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGTARM</Key>
-          <Name>(1010=679,254,1275,939,0)(1007=-1,-1,-1,-1,0)(1008=120,149,618,438,0)(1009=-1,-1,-1,-1,0)</Name>
+          <Name>(1010=679,254,1275,939,0)(1007=-1,-1,-1,-1,0)(1008=120,149,618,438,0)(1009=585,230,925,953,0)</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -200,12 +200,17 @@
           <WinNumber>1</WinNumber>
           <ItemText>huart-&gt;gState</ItemText>
         </Ww>
+        <Ww>
+          <count>9</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>portNVIC_INT_CTRL_REG</ItemText>
+        </Ww>
       </WatchWindow1>
       <MemoryWindow1>
         <Mm>
           <WinNumber>1</WinNumber>
           <SubType>0</SubType>
-          <ItemText>0x20001EF0</ItemText>
+          <ItemText>0x20004290</ItemText>
           <AccSizeX>0</AccSizeX>
         </Mm>
       </MemoryWindow1>

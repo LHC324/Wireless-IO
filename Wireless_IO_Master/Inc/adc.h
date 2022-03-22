@@ -28,7 +28,7 @@ extern "C" {
 #include "main.h"
 
 /* USER CODE BEGIN Includes */
-#define ADC_DMA_CHANNEL 2U
+#define ADC_DMA_CHANNEL 8U
 #define ADC_SAMPLING_NUM   8U
 #define ADC_DMA_SIZE (ADC_DMA_CHANNEL * ADC_SAMPLING_NUM)
 /* USER CODE END Includes */
