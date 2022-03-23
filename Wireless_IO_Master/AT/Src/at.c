@@ -626,6 +626,9 @@ static const char *atText[] = {
     [NO_CMD] = "Error: Command does not exist!\r\n",
 };
 
+/*清除HAL库计数器*/
+#define SET_HAL_TICK(__value) (uwTick = __value)
+
 /**
  * @brief       等待接收到指定串
  * @param[in]   resp    - 期待待接收串(如"OK",">")
@@ -634,7 +637,8 @@ static const char *atText[] = {
 At_InfoList Wait_Recv(Shell *const shell, const ReceiveBufferHandle pB, const char *resp, uint16_t timeout)
 {
     At_InfoList ret = CONF_TOMEOUT;
-    uint16_t timer = HAL_GetTick();
+//    SET_HAL_TICK(0U);
+    uint32_t timer = HAL_GetTick();
 
     // ret = CONF_SUCCESS;
 #if defined(USING_DEBUG)
@@ -645,13 +649,25 @@ At_InfoList Wait_Recv(Shell *const shell, const ReceiveBufferHandle pB, const ch
     //     osDelay(1);
     // };
 
+#if defined(USING_DEBUG)
+    // shellPrint(shell, "error:%d\r\n", __HAL_UART_GET_FLAG(&huart1, UART_FLAG_ORE));
+#endif
+
+    /*DMA receive interrupt is managed by the operating system*/
+    // portENABLE_INTERRUPTS();
     while (!pB->count)
     {
+
+        // if (HAL_GetTick() - timer > timeout)
+        if (GET_TIMEOUT_FLAG(timer, HAL_GetTick(), timeout, HAL_MAX_DELAY))
+            break;
         osDelay(1);
-    };
+    }
+    // portDISABLE_INTERRUPTS();
 #if defined(USING_DEBUG)
-        // shellPrint(shell, "pB->count:%d\r\n", pB->count);
-        // shellPrint(shell, "pB:%p\r\n", pB);
+    // shellPrint(shell, "pB->count:%d\r\n", pB->count);
+    // shellPrint(shell, "pB:%p\r\n", pB);
+    // shellPrint(shell, "tick = :%d\r\n", HAL_GetTick());
 #endif
     if (pB->count)
     {

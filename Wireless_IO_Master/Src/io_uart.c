@@ -124,7 +124,8 @@ HAL_StatusTypeDef HAL_SUART_Transmit(IoUart_HandleTypeDef *huart, uint8_t *pData
 
         while (!huart->Tx.Finsh_Flag)
         {
-            if (GET_SUART_FLAG(tickstart, Timeout) || (Timeout == 0U))
+            // if (GET_SUART_FLAG(tickstart, Timeout) || (Timeout == 0U))
+            if (GET_TIMEOUT_FLAG(tickstart, HAL_GetTick(), Timeout, HAL_MAX_DELAY) || (Timeout == 0U))
             {
                 return HAL_TIMEOUT;
             }
@@ -163,7 +164,8 @@ HAL_StatusTypeDef HAL_SUART_Receive(IoUart_HandleTypeDef *huart, uint8_t *pData,
 #if defined(USING_RTOS)
             // osDelay(1);
 #endif
-            if (GET_SUART_FLAG(tickstart, Timeout) || (Timeout == 0U))
+            // if (GET_SUART_FLAG(tickstart, Timeout) || (Timeout == 0U))
+            if (GET_TIMEOUT_FLAG(tickstart, HAL_GetTick(), Timeout, HAL_MAX_DELAY) || (Timeout == 0U))
             {
                 *pData = huart->Rx.Data = huart->Rx.Len = 0U;
                 return HAL_TIMEOUT;

@@ -70,7 +70,8 @@ extern "C" {
 
 /* Exported macro ------------------------------------------------------------*/
 /* USER CODE BEGIN EM */
-
+#define GET_TIMEOUT_FLAG(Stime, Ctime, timeout, MAX) \
+  ((Ctime) < (Stime) ? !!((((MAX) - (Stime)) + (Ctime)) > (timeout)) : !!((Ctime) - (Stime) > (timeout)))
 /* USER CODE END EM */
 
 /* Exported functions prototypes ---------------------------------------------*/
