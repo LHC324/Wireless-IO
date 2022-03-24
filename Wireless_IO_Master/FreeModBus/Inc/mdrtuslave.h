@@ -60,12 +60,12 @@ extern void *pvPortMalloc(size_t xWantedSize);
 #define mdmalloc(pointer, type, length)                    \
     pointer = (type *)pvPortMalloc(sizeof(type) * length); \
     memset(pointer, 0, sizeof(type) * length)
-#define mdfree(pointer) free(pointer)
+#define mdfree(pointer) vPortFree(pointer)
 #else
 #define mdmalloc(pointer, type, length)              \
     pointer = (type *)malloc(sizeof(type) * length); \
     memset(pointer, 0, sizeof(type) * length)
-#define mdfree(pointer) vPortFree(pointer)
+#define mdfree(pointer) free(pointer)
 #endif
 
 typedef struct ModbusRTUSlave *ModbusRTUSlaveHandler;
